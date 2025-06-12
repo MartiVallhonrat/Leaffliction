@@ -2,3 +2,4 @@
 **/__pycache__
 **/dataset/images/
 **/plots
+.DS_Store
