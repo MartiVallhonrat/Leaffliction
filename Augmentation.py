@@ -59,6 +59,18 @@ def main(image_path):
     img_projective = cv.warpPerspective(img, rotMat, (width, height))
     cv.imwrite(f"{savedir_path}/{img_name}_Projective{suff}", img_projective)
     # cv.imwrite(f"{fromdir_path}/{img_name}_Projective{suff}", img_projective)
+    
+    # Enhanced image
+    lab = cv.cvtColor(img, cv.COLOR_BGR2LAB)
+    l_channel, a, b = cv.split(lab)
+    
+    # applying CLAHE to L-channel (light channel)
+    clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    cl = clahe.apply(l_channel)
+    
+    limerge = cv.merge((cl, a, b))
+    enhanced_img = cv.cvtColor(limerge, cv.COLOR_LAB2BGR)
+    cv.imwrite(f"{savedir_path}/{img_name}_Enhanced{suff}", enhanced_img)
 
 
 def parse_args():
