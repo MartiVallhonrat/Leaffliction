@@ -6,23 +6,26 @@ import matplotlib.pyplot as plt
 def draw_plots(df_name, df):
     labels = list(df.keys())
     values = list(df.values())
-    os.makedirs('./plots', exist_ok=True)
+    fig, ax = plt.subplots(1, 2)
 
-    plt.pie(values, autopct=lambda pct: f"{pct:.1f}%",
-            colors=['blue', 'red', 'cyan', 'purple'],
-            textprops=dict(color="w"))
-    plt.title(f"{df_name} class distribution")
-    plt.savefig(f"./plots/pie_{df_name}")
-    plt.close('all')
+    ax[0].pie(
+        values,
+        autopct=lambda pct: f"{pct:.1f}%",
+        colors=["blue", "red", "cyan", "purple"],
+        textprops=dict(color="w"),
+    )
+    ax[0].set_title(f"{df_name} class distribution")
 
-    plt.bar(labels, values, color=['blue', 'red', 'cyan', 'purple'])
-    plt.title(f"{df_name} class distribution")
-    plt.savefig(f"./plots/bar_{df_name}")
-    plt.close('all')
+    ax[1].bar(labels, values, color=["blue", "red", "cyan", "purple"])
+    ax[1].set_title(f"{df_name} class distribution")
+    [e.set_rotation(45) for e in ax[1].get_xticklabels()]
+
+    plt.tight_layout()
+    plt.show()
 
 
 def main(dir_path):
-    df_name = dir_path[dir_path.rfind('/') + 1:]
+    df_name = dir_path[dir_path.rfind("/") + 1:]
     df = {}
 
     for sub_file in os.listdir(dir_path):
@@ -34,13 +37,13 @@ def main(dir_path):
     draw_plots(df_name, df)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         if len(sys.argv) < 2:
             raise ValueError("Enter a directory as argument")
         if not os.path.isdir(sys.argv[1]):
             raise ValueError("The entered argument does not exist")
-        if sys.argv[1].endswith('/'):
+        if sys.argv[1].endswith("/"):
             sys.argv[1] = sys.argv[1][:-1]
 
         main(sys.argv[1])
