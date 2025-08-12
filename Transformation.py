@@ -52,11 +52,8 @@ def get_mask(img):
     img_blur = cv.GaussianBlur(img_gray, (21, 21), 0)
 
     leaf_mask = cv.threshold(
-        img_blur,
-        0,
-        255,
-        cv.THRESH_BINARY_INV + cv.THRESH_OTSU
-    )[1]
+        img_blur, 0, 255,
+        cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 
     threshold = cv.adaptiveThreshold(
         img_blur, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 101, 3
@@ -84,14 +81,11 @@ def get_roi(img, mask):
     green_mask = cv.bitwise_or(green, green, mask=mask)
     roi = cv.bitwise_or(green_mask, img)
 
-    contours = cv.findContours(
-        mask,
-        cv.RETR_EXTERNAL,
-        cv.CHAIN_APPROX_SIMPLE
-    )[0]
-    largest_contour = max(contours, key=cv.contourArea)
-    x, y, w, h = cv.boundingRect(largest_contour)
-    roi = cv.rectangle(roi, (x, y), (x + w, y + h), (255, 0, 0), 5)
+    # contours = cv.findContours(mask, cv.RETR_EXTERNAL,
+    #               cv.CHAIN_APPROX_SIMPLE)[0]
+    # largest_contour = max(contours, key=cv.contourArea)
+    # x, y, w, h = cv.boundingRect(largest_contour)
+    # roi = cv.rectangle(roi, (x, y), (x + w, y + h), (255, 0, 0), 5)
 
     return roi
 
@@ -181,16 +175,16 @@ def single_graph(img, mode):
     ax[0].set_title("Original")
 
     mask = get_mask(img)
-    if mode == '"Gaussian blur"':
+    if mode == "Gaussian blur":
         img_rgb = cv.cvtColor(mask, cv.COLOR_BGR2RGB)
         ax[1].set_title("Gaussian Blur")
     elif mode == "Mask":
         img_rgb = cv.cvtColor(get_rmask(img, mask), cv.COLOR_BGR2RGB)
         ax[1].set_title("Mask")
-    elif mode == '"Roi objects"':
+    elif mode == "Roi objects":
         img_rgb = cv.cvtColor(get_roi(img, mask), cv.COLOR_BGR2RGB)
         ax[1].set_title("Roi Objects")
-    elif mode == '"Analyze object"':
+    elif mode == "Analyze object":
         img_rgb = cv.cvtColor(
             pcv.analyze.size(img=img, labeled_mask=mask), cv.COLOR_BGR2RGB
         )
