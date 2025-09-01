@@ -75,24 +75,41 @@ def get_rmask(img, mask):
     return r_mask
 
 
-# GET ROI ESTA MALAMENT AGAFAR EL DEL ASIER
 def get_roi(img, mask):
     green = np.full(img.shape, [0, 255, 0], dtype=np.uint8)
     green_mask = cv.bitwise_or(green, green, mask=mask)
     roi = cv.bitwise_or(green_mask, img)
 
-    # contours = cv.findContours(mask, cv.RETR_EXTERNAL,
-    #               cv.CHAIN_APPROX_SIMPLE)[0]
-    # largest_contour = max(contours, key=cv.contourArea)
-    # x, y, w, h = cv.boundingRect(largest_contour)
-    # roi = cv.rectangle(roi, (x, y), (x + w, y + h), (255, 0, 0), 5)
+    contours = cv.findContours(mask, cv.RETR_EXTERNAL,
+                  cv.CHAIN_APPROX_SIMPLE)[0]
+    
+    if contours:
+        largest_contour = max(contours, key=cv.contourArea)
+        x, y, w, h = cv.boundingRect(largest_contour)
+        roi = cv.rectangle(roi, (x, y), (x + w, y + h), (255, 0, 0), 5)
 
     return roi
 
 
-def get_landmarks(img):
-    # DEVOLVER PSEUDOLANDMARKS
-    return img
+def get_landmarks(img, mask):
+
+    left, right, center_h = pcv.homology.y_axis_pseudolandmarks(img=img, mask=mask)
+
+    land_img = np.copy(img)
+    for i in left:
+        x = i[0, 0]
+        y = i[0, 1]
+        cv.circle(land_img, (int(x), int(y)), 5, (255, 0, 0), -1)
+    for i in right:
+        x = i[0, 0]
+        y = i[0, 1]
+        cv.circle(land_img, (int(x), int(y)), 5, (255, 0, 255), -1)
+    for i in center_h:
+        x = i[0, 0]
+        y = i[0, 1]
+        cv.circle(land_img, (int(x), int(y)), 5, (0, 79, 255), -1)
+
+    return land_img
 
 
 def transform_dir(args):
@@ -125,7 +142,7 @@ def transform_dir(args):
             cv.imwrite(f"{dst_path}/{img_name}_analysis{suff}", analysis)
 
         if mode == "Pseudolandmarks" or mode == "All":
-            landmarks = get_landmarks(img)
+            landmarks = get_landmarks(img, mask)
             cv.imwrite(f"{dst_path}/{img_name}_landmarks{suff}", landmarks)
 
 
@@ -160,7 +177,7 @@ def multi_graph(img):
     ax[2, 0].axis("off")
     ax[2, 0].set_title("Analyze Object")
 
-    img_rgb = cv.cvtColor(get_landmarks(img), cv.COLOR_BGR2RGB)
+    img_rgb = cv.cvtColor(get_landmarks(img, mask), cv.COLOR_BGR2RGB)
     ax[2, 1].imshow(img_rgb)
     ax[2, 1].axis("off")
     ax[2, 1].set_title("Pseudolandmarks")
@@ -190,7 +207,7 @@ def single_graph(img, mode):
         )
         ax[1].set_title("Analyze Object")
     elif mode == "Pseudolandmarks":
-        img_rgb = cv.cvtColor(get_landmarks(img), cv.COLOR_BGR2RGB)
+        img_rgb = cv.cvtColor(get_landmarks(img, mask), cv.COLOR_BGR2RGB)
         ax[1].set_title("Pseudolandmarks")
 
     ax[1].axis("off")

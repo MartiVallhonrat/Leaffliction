@@ -38,7 +38,7 @@ class CustomTransform:
         elif trans == "Analyze object":
             trans_img = pcv.analyze.size(img=img_bgr, labeled_mask=mask)
         elif trans == "Pseudolandmarks":
-            trans_img = get_landmarks(img_bgr)
+            trans_img = get_landmarks(img_bgr, mask)
 
         # Save transformed image in an extra folder here
         cv.imwrite(f"transformed_train/image ({self._num}).JPG", trans_img)

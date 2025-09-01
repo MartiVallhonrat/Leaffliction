@@ -47,7 +47,7 @@ def plot_prediction(img_path, pred_class, true_class):
     elif trans == "Analyze object":
         trans_img = pcv.analyze.size(img=img, labeled_mask=mask)
     elif trans == "Pseudolandmarks":
-        trans_img = get_landmarks(img)
+        trans_img = get_landmarks(img, mask)
 
     trans_img_rgb = cv.cvtColor(trans_img, cv.COLOR_BGR2RGB)
     ax[1].imshow(trans_img_rgb)
