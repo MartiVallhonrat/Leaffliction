@@ -81,8 +81,8 @@ def get_roi(img, mask):
     roi = cv.bitwise_or(green_mask, img)
 
     contours = cv.findContours(mask, cv.RETR_EXTERNAL,
-                  cv.CHAIN_APPROX_SIMPLE)[0]
-    
+                               cv.CHAIN_APPROX_SIMPLE)[0]
+
     if contours:
         largest_contour = max(contours, key=cv.contourArea)
         x, y, w, h = cv.boundingRect(largest_contour)
@@ -93,7 +93,9 @@ def get_roi(img, mask):
 
 def get_landmarks(img, mask):
 
-    left, right, center_h = pcv.homology.y_axis_pseudolandmarks(img=img, mask=mask)
+    left, right, center_h = pcv.homology.y_axis_pseudolandmarks(
+        img=img,
+        mask=mask)
 
     land_img = np.copy(img)
     for i in left:
